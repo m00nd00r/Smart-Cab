@@ -46,7 +46,9 @@ class LearningAgent(Agent):
         #a = 0.025 #yields about 120 trials
         #a = 0.08 #yields about 40 trials
         #a = 0.02 #yields about 150 trials
-        a = 0.015 #yields about 200 trials
+        #a = 0.015 #yields about 200 trials
+        #a = 0.01 #yields about 300 trials
+        a = 0.008 #yields about 375 trials
         
         ########### 
         ## TO DO ##
@@ -61,7 +63,7 @@ class LearningAgent(Agent):
         
         else:
             if self.learning:    
-                #self.epsilon -= 0.0166
+                #self.epsilon -= 0.05
                 self.epsilon = float(1)/math.exp(float( a * self.num_trials))
                 #self.alpha = float(1)/math.exp(float( a * self.num_trials))
                 #self.epsilon = float(1)/math.pow(self.num_trials,2)
@@ -73,7 +75,7 @@ class LearningAgent(Agent):
                 #self.alpha = (1 + math.cos(2*math.pi + 0.04*self.num_trials))/2
                 #self.alpha -= 0.0147  #1/68
                 #self.alpha -= 0.011  #1/91
-                self.alpha -= float(1)/200
+                self.alpha -= float(1)/375
             
         return None
 
@@ -105,48 +107,21 @@ class LearningAgent(Agent):
         # agent turning right under any conditions.
         
         if self.learning:
-            
-            #state = (waypoint, inputs['light'], ('oncoming',inputs['oncoming']), ('left',inputs['left']))
-            
-            if inputs['light'] == 'green':
-                #if waypoint == 'forward' or 'right':             #forward and right are treated
-                    learning_inputs['light'] = inputs['light']
-                    learning_inputs['oncoming'] = inputs['oncoming'] #forward, right, or none are treated as equivalent here
- 
-                #else:
-                #    if (inputs['oncoming'] == 'forward') or (inputs['oncoming'] == 'right'):
-                #        learning_inputs['light'] = inputs['light']
-                #        learning_inputs['oncoming'] = inputs['oncoming'] #forward and right are treated as equivalent
-                #    else:
-                #        learning_inputs['light'] = inputs['light']
-                #        learning_inputs['oncoming'] = inputs['oncoming']  #left and None are treated as equivalent
+            #if inputs['light'] == 'green':
+            #        learning_inputs['light'] = inputs['light']
+            #        learning_inputs['oncoming'] = inputs['oncoming'] 
+            #        learning_inputs['left'] = None
+            #        learning_inputs['right'] = None
 
-            if inputs['light'] == 'red':
-                learning_inputs['light'] = inputs['light']
-                learning_inputs['left'] = inputs['left']
-                #learning_inputs['right'] = inputs['right']
-                #if waypoint == 'right':
-                #    if inputs['left'] == 'right':
-                #        learning_inputs['light'] = inputs['light']
-                #        learning_inputs['left'] = inputs['left']
-                #else:
-                #    if (inputs['left'] == 'right') and (inputs['right'] == None):
-                #        learning_inputs['light'] = 'red'
-                #    else:
-                #        learning_inputs['light'] = 'red'
-                #        learning_inputs['left'] = inputs['left']
-                #        learning_inputs['right'] = inputs['right']
-            
-            
-            #if inputs['light'] == 'green' or 'red':
+            #if inputs['light'] == 'red':
             #    learning_inputs['light'] = inputs['light']
-            #    learning_inputs['oncoming'] = inpust=['oncoming']
+            #    learning_inputs['oncoming'] = None
             #    learning_inputs['left'] = inputs['left']
-            #    #learning_inputs['right'] = None
-               
-            #state = str(learning_inputs)
+            #    learning_inputs['right'] = inputs['right']
             
-            state = (waypoint, str(learning_inputs))
+            #state = (waypoint, str(learning_inputs))
+            state = (waypoint, str(inputs))
+            #state = str(inputs)
         else:
             state = (waypoint, str(inputs), deadline)
             
@@ -163,26 +138,11 @@ class LearningAgent(Agent):
         ###########
         # Calculate the maximum Q-value of all actions for a given state
 
-        maxQ = max(self.Q[self.state], key=self.Q[self.state].get)
-        #maxQ = max(q[state].values())
+        #maxQ = max(self.Q[self.state], key=self.Q[self.state].get)
+        maxQ = max(self.Q[state].values())
 
         return maxQ
     
-    def rank_Q(self, state):
-        """ The get_max_Q function is called when the agent is asked to find the
-            maximum Q-value of all actions based on the 'state' the smartcab is in. """
-        
-        self.state = state
-        ########### 
-        ## TO DO ##
-        ###########
-        # Sort the actions for a given state by Q-value from highest to lowest
-
-        rankedQ = sorted(q[state], key=q[state].get, reverse = True)
-
-        return rankedQ 
-
-
     def createQ(self, state):
         """ The createQ function is called when a state is generated by the agent. """
         
@@ -195,9 +155,8 @@ class LearningAgent(Agent):
         #   Then, for each action available, set the initial Q-value to 0.0
         
         if self.learning:
-            self.Q.setdefault(self.state,dict((va,10.0) for va in self.valid_actions))
-                
-
+            self.Q.setdefault(self.state,dict((va,0.0) for va in self.valid_actions))
+            
         return
 
 
@@ -209,6 +168,7 @@ class LearningAgent(Agent):
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
         action = None
+
 
         ########### 
         ## TO DO ##
@@ -236,34 +196,12 @@ class LearningAgent(Agent):
             if random.random() < self.epsilon:
                 action = random.choice(self.valid_actions)
             else:
-                action = self.get_maxQ(self.state)
-                #if self.next_waypoint == 'left':
-                #    if self.get_maxQ(self.state) == 'left':
-                #        action = 'left'
-                #    elif self.Q[self.state]['forward'] > 0:
-                #        action = 'forward'
-                #    elif self.Q[self.state][None] > 0:
-                #        action = None
-                #    else:
-                #        action = self.get_maxQ(self.state)
-                #        
-                #elif self.next_waypoint == 'right':
-                #    if self.get_maxQ(self.state) == 'right':
-                #        action = 'right'
-                #    elif self.Q[self.state]['forward'] > 0:
-                #        action = 'forward'
-                #    elif self.Q[self.state][None] > 0:
-                #        action = None
-                #    else:
-                #        action = self.get_maxQ(self.state)
-                #        
-                #elif (self.next_waypoint == 'forward') and (self.get_maxQ(self.state) == 'forward'):
-                #    action = 'forward'
-                #    
-                #elif self.Q[self.state][None] > 0:
-                #        action = None
-                #else:
-                #    action = self.get_maxQ(self.state)
+                #if get_maxQ(self.state) > 1:
+                #    for i in self.Q[self.state].keys():
+                #        if self.Q[self.state][i] == get_maxQ(self.state):
+                #            actionlist.append(i)
+                      
+                action = random.choice([i for i in self.Q[self.state].keys() if self.Q[self.state][i] == self.get_maxQ(self.state)])
         else:
             action = random.choice(self.valid_actions)
 
@@ -329,7 +267,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning = True, alpha = 1.0)
+    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.5)
     
     ##############
     # Follow the driving agent
@@ -344,7 +282,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, display = False, update_delay = 0.005, log_metrics = True, optimized = True)
+    sim = Simulator(env, display = False, update_delay = 0.005, log_metrics = True, optimized = False)
     
     ##############
     # Run the simulator
