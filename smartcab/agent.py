@@ -48,7 +48,7 @@ class LearningAgent(Agent):
         #a = 0.02 #yields about 150 trials
         #a = 0.015 #yields about 200 trials
         #a = 0.01 #yields about 300 trials
-        a = 0.008 #yields about 375 trials
+        #a = 0.008 #yields about 375 trials
         
         ########### 
         ## TO DO ##
@@ -64,18 +64,20 @@ class LearningAgent(Agent):
         else:
             if self.learning:    
                 #self.epsilon -= 0.05
-                self.epsilon = float(1)/math.exp(float( a * self.num_trials))
+                #self.epsilon = float(1)/math.exp(float( a * self.num_trials))
                 #self.alpha = float(1)/math.exp(float( a * self.num_trials))
                 #self.epsilon = float(1)/math.pow(self.num_trials,2)
                 #self.epsilon = (1 + math.cos(2*math.pi + 0.04*self.num_trials))/2     #produces 68 trials
                 #self.epsilon = (1 + math.cos(2*math.pi + 0.03*self.num_trials))/2     #produces 91 trials
                 #self.epsilon = (1 + math.cos(2*math.pi + 0.02*self.num_trials))/2     #produces 136 trials
+                #self.epsilon = 1 - (1/(1+math.exp(-.03*(self.num_trials-300))))
+                self.epsilon = 1 - (1/(1+math.exp(-.02*(self.num_trials-250))))
                 
                 #self.alpha -= 0.0166  #1/60
                 #self.alpha = (1 + math.cos(2*math.pi + 0.04*self.num_trials))/2
                 #self.alpha -= 0.0147  #1/68
                 #self.alpha -= 0.011  #1/91
-                self.alpha -= float(1)/375
+                #self.alpha -= float(1)/375
             
         return None
 
@@ -95,36 +97,9 @@ class LearningAgent(Agent):
         ###########
         # Set 'state' as a tuple of relevant data for the agent
         
-        # For this attempt at winnowing the state space for learning, I've decided that while
-        # green, the smartcab can assume there is no cross-traffic, based on this code's implementation
-        # for all the other agents behaving the traffic laws. Thus, if 'left' and 'right' agents have
-        # a red light, smartcab won't have to worry about hitting them.
-        #
-        # Furthermore, when light is red, similarly, smartcab won't have to worry about the 'oncoming'
-        # agent's behavior either.
-        #
-        # One further refinement will be that the smartcab will never have to worry about the 'left'
-        # agent turning right under any conditions.
-        
         if self.learning:
-            #if inputs['light'] == 'green':
-            #        learning_inputs['light'] = inputs['light']
-            #        learning_inputs['oncoming'] = inputs['oncoming'] 
-            #        learning_inputs['left'] = None
-            #        learning_inputs['right'] = None
-
-            #if inputs['light'] == 'red':
-            #    learning_inputs['light'] = inputs['light']
-            #    learning_inputs['oncoming'] = None
-            #    learning_inputs['left'] = inputs['left']
-            #    learning_inputs['right'] = inputs['right']
-            
-            #state = (waypoint, str(learning_inputs))
             state = (waypoint, str(inputs))
-            #state = str(inputs)
-        else:
-            state = (waypoint, str(inputs), deadline)
-            
+
         return state
 
 
@@ -155,7 +130,8 @@ class LearningAgent(Agent):
         #   Then, for each action available, set the initial Q-value to 0.0
         
         if self.learning:
-            self.Q.setdefault(self.state,dict((va,0.0) for va in self.valid_actions))
+            if self.state not in self.Q:
+                self.Q.setdefault(self.state,dict((va,0.0) for va in self.valid_actions))
             
         return
 
@@ -176,22 +152,7 @@ class LearningAgent(Agent):
         # When not learning, choose a random action
         # When learning, choose a random action with 'epsilon' probability
         #   Otherwise, choose an action with the highest Q-value for the current state
-        
-        # Choice action policy when not learning:
-        # If Next Waypoint (NW) = left:
-        #     If Q(state,action = left) > 0: action = left
-        #     Else If Q(state, action = forward) > 0: action = forward
-        #     Else: action = None
-        #
-        # If NW = right:
-        #     If Q(state, action = right) > 0: action = right
-        #     Else If Q(state, action = foreard > 0 action = forward
-        #     Else: action = None
-        #
-        # If NW = forward and Q(state, action = forward): action = forward
-        # Else: action = None 
-        #     
-        
+
         if self.learning:
             if random.random() < self.epsilon:
                 action = random.choice(self.valid_actions)
@@ -267,7 +228,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.5)
+    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.8)
     
     ##############
     # Follow the driving agent
@@ -282,14 +243,14 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, display = False, update_delay = 0.005, log_metrics = True, optimized = False)
+    sim = Simulator(env, display = False, update_delay = 0.005, log_metrics = True, optimized = True)
     
     ##############
     # Run the simulator
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test = 10)
+    sim.run(n_test = 50, tolerance = 0.001)
 
 
 if __name__ == '__main__':
