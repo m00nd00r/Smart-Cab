@@ -97,8 +97,8 @@ class LearningAgent(Agent):
         ###########
         # Set 'state' as a tuple of relevant data for the agent
         
-        if self.learning:
-            state = (waypoint, str(inputs))
+ 
+        state = (waypoint, str(inputs))
 
         return state
 
