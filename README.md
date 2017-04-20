@@ -1,5 +1,6 @@
 # Reinforcement Learning
 ## Project: Train a Smartcab How to Drive
+## see https://m00nd00r.github.io/Smart-Cab/ for project info
 
 ### Install
 
