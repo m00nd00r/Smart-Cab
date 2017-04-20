@@ -71,7 +71,7 @@ class LearningAgent(Agent):
                 #self.epsilon = (1 + math.cos(2*math.pi + 0.03*self.num_trials))/2     #produces 91 trials
                 #self.epsilon = (1 + math.cos(2*math.pi + 0.02*self.num_trials))/2     #produces 136 trials
                 #self.epsilon = 1 - (1/(1+math.exp(-.03*(self.num_trials-300))))
-                self.epsilon = 1 - (1/(1+math.exp(-.02*(self.num_trials-250))))
+                self.epsilon = 1 - (1/(1+math.exp(-.02*(self.num_trials-250))))       #use this for final
                 
                 #self.alpha -= 0.0166  #1/60
                 #self.alpha = (1 + math.cos(2*math.pi + 0.04*self.num_trials))/2
@@ -97,8 +97,10 @@ class LearningAgent(Agent):
         ###########
         # Set 'state' as a tuple of relevant data for the agent
         
- 
-        state = (waypoint, str(inputs))
+        if self.learning:
+            state = (waypoint, str(inputs))
+        else:
+            state = None
 
         return state
 
@@ -157,10 +159,10 @@ class LearningAgent(Agent):
             if random.random() < self.epsilon:
                 action = random.choice(self.valid_actions)
             else:
-                #if get_maxQ(self.state) > 1:
                 #    for i in self.Q[self.state].keys():
                 #        if self.Q[self.state][i] == get_maxQ(self.state):
-                #            actionlist.append(i)
+                #            action = random.choice(i)  #For tie-breaking: if 2+ max values are equal, just pick one at random
+                #Above code can be written as below:
                       
                 action = random.choice([i for i in self.Q[self.state].keys() if self.Q[self.state][i] == self.get_maxQ(self.state)])
         else:
@@ -220,6 +222,8 @@ def run():
     #   verbose     - set to True to display additional output from the simulation
     #   num_dummies - discrete number of dummy agents in the environment, default is 100
     #   grid_size   - discrete number of intersections (columns, rows), default is (8, 6)
+    
+    #Leave this line uncommented and unchanged regardless of learning or no learning
     env = Environment()
     
     ##############
@@ -228,13 +232,26 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
+ 
+    #Uncomment this line for final optimized learning settings.
     agent = env.create_agent(LearningAgent, learning = True, alpha = 0.8)
+    
+    #Uncomment this line for initial default, learning with no optization
+    #agent = env.create_agent(LearningAgent, learning = True)
+    
+    #Uncomment the next line for default, no-learning
+    #agent = env.create_agent(LearningAgent)
     
     ##############
     # Follow the driving agent
     # Flags:
     #   enforce_deadline - set to True to enforce a deadline metric
+    
+    #For learning or no-learing with driving agent enabled
     env.set_primary_agent(agent, enforce_deadline = True)
+    
+    #Default, no learning
+    #env.set_primary_agent(agent)
 
     ##############
     # Create the simulation
@@ -243,14 +260,33 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
+    
+    #Uncomment this line for final optimized learning settings.
     sim = Simulator(env, display = False, update_delay = 0.005, log_metrics = True, optimized = True)
+    
+    #Uncomment this line for initial default, learning with no optization
+    #sim = Simulator(env, display = False, update_delay = 0.005, log_metrics = True)
+    
+    #For initial no-learning with basic driving agent enabled
+    #sim = Simulator(env, display = False, update_delay = 0.01, log_metrics = True)
+    
+    #Default, no-learning
+    #sim = Simulator(env)
     
     ##############
     # Run the simulator
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
+    
+    #Uncomment this line for final optimized learning settings.
     sim.run(n_test = 50, tolerance = 0.001)
+    
+    #Uncomment this line for initial default, learning with no optization
+    #sim.run(n_test = 10)
+    
+    #Default, no learning
+    sim.run()
 
 
 if __name__ == '__main__':
