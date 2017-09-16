@@ -4,8 +4,14 @@
 
 ### Install
 
-This project requires **Python 2.7** with the [pygame](https://www.pygame.org/wiki/GettingStarted
-) library installed
+This project requires **Python 2.7** and the following Python libraries installed:
+
+- [time]
+- [math]
+- [random]
+- [collections]
+
+You will also need to have software installed to run and execute a [Jupyter Notebook](http://ipython.org/notebook.html). Recommend using the Anaconda package and environment manager.
 
 ### Code
 
