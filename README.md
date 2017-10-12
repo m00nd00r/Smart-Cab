@@ -2,19 +2,33 @@
 ## Project: Train a Smartcab How to Drive
 ## see https://m00nd00r.github.io/Smart-Cab/ for project info
 
-### Install
 
-This project requires **Python 2.7** and the following Python libraries installed:
 
-- time
-- math
-- random
-- collections
-- os
-- csv
-- importlib
+## Install
 
-You will also need to have software installed to run and execute a [Jupyter Notebook](http://ipython.org/notebook.html). Recommend using the Anaconda package and environment manager.
+This project requires **Python 2** and uses the Anaconda package manager.
+If you haven't already please download and install Anaconda.
+
+Instructions:
+1. Clone the repository and navigate to the downloaded folder.
+	
+	```	
+		git clone https://github.com/m00nd00r/Smart-Cab.git
+		cd Smart-Cab
+	```
+    
+2. Obtain the necessary Python packages.  
+	
+	For __Mac/OSX/Linux__:
+	```
+		conda create -f smartcab requirements/smartcab-osx.yml
+		source activate smartcab
+	```
+
+	For __Windows__:
+	```
+		conda create -f smartcab requirements/smartcab-windows.yml
+		activate smartcab
 
 ### Code
 
