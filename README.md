@@ -21,13 +21,13 @@ Instructions:
 	
 	For __Mac/OSX/Linux__:
 	```
-		conda create -f smartcab requirements/smartcab-osx.yml
+		conda env create -f requirements/smartcab-osx.yml
 		source activate smartcab
 	```
 
 	For __Windows__:
 	```
-		conda create -f smartcab requirements/smartcab-windows.yml
+		conda env create -f requirements/smartcab-windows.yml
 		activate smartcab
 
 ### Code
