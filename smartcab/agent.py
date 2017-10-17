@@ -234,13 +234,13 @@ def run():
     #    * alpha   - continuous value for the learning rate, default is 0.5
  
     #Uncomment this line for final optimized learning settings.
-    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.8)
+    #agent = env.create_agent(LearningAgent, learning = True, alpha = 0.8)
     
     #Uncomment this line for initial default, learning with no optization
     #agent = env.create_agent(LearningAgent, learning = True)
     
     #Uncomment the next line for default, no-learning
-    #agent = env.create_agent(LearningAgent)
+    agent = env.create_agent(LearningAgent)
     
     ##############
     # Follow the driving agent
@@ -248,10 +248,10 @@ def run():
     #   enforce_deadline - set to True to enforce a deadline metric
     
     #For learning or no-learing with driving agent enabled
-    env.set_primary_agent(agent, enforce_deadline = True)
+    #env.set_primary_agent(agent, enforce_deadline = True)
     
     #Default, no learning
-    #env.set_primary_agent(agent)
+    env.set_primary_agent(agent)
 
     ##############
     # Create the simulation
@@ -262,7 +262,7 @@ def run():
     #   optimized    - set to True to change the default log file name
     
     #Uncomment this line for final optimized learning settings.
-    sim = Simulator(env, display = False, update_delay = 0.005, log_metrics = True, optimized = True)
+    #sim = Simulator(env, display = False, update_delay = 0.005, log_metrics = True, optimized = True)
     
     #Uncomment this line for initial default, learning with no optization
     #sim = Simulator(env, display = False, update_delay = 0.005, log_metrics = True)
@@ -270,7 +270,10 @@ def run():
     #For initial no-learning with basic driving agent enabled
     #sim = Simulator(env, display = False, update_delay = 0.01, log_metrics = True)
     
-    #Default, no-learning
+    #Default, no-learning, faster
+    sim = Simulator(env, update_delay=0.01)
+    
+    #Default, no-learning, slow
     #sim = Simulator(env)
     
     ##############
@@ -280,7 +283,7 @@ def run():
     #   n_test     - discrete number of testing trials to perform, default is 0
     
     #Uncomment this line for final optimized learning settings.
-    sim.run(n_test = 50, tolerance = 0.001)
+    #sim.run(n_test = 50, tolerance = 0.001)
     
     #Uncomment this line for initial default, learning with no optization
     #sim.run(n_test = 10)
